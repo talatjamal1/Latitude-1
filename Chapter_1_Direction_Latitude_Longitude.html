@@ -1,0 +1,1444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 1 — Direction, Latitude & Longitude | Pilot's Logbook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  /* ========================================================
+     PILOT'S LOGBOOK — Chapter 1 Interactive Notes
+     Aesthetic: Vintage aeronautical chart meets modern study guide
+     ======================================================== */
+
+  :root {
+    --parchment: #f4ecd8;
+    --parchment-dark: #ebe0c4;
+    --parchment-darker: #d9c89e;
+    --ink: #1c2b3a;
+    --ink-soft: #3a4b5c;
+    --ink-faded: #6b7a8a;
+    --amber: #c9882b;
+    --amber-deep: #a36918;
+    --teal: #2c5f5d;
+    --teal-soft: #4a8480;
+    --rust: #a8443a;
+    --rust-soft: #c46b5e;
+    --line: rgba(28, 43, 58, 0.18);
+    --line-soft: rgba(28, 43, 58, 0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Lora', Georgia, serif;
+    background: var(--parchment);
+    color: var(--ink);
+    line-height: 1.7;
+    font-size: 17px;
+    /* Subtle paper grain */
+    background-image:
+      radial-gradient(ellipse at top left, rgba(201,136,43,0.08), transparent 50%),
+      radial-gradient(ellipse at bottom right, rgba(44,95,93,0.06), transparent 50%),
+      repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(28,43,58,0.012) 2px, rgba(28,43,58,0.012) 3px);
+  }
+
+  /* ---------- TYPOGRAPHY ---------- */
+  h1, h2, h3, h4 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+
+  .display-num {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-style: italic;
+    color: var(--amber-deep);
+  }
+
+  .mono {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9em;
+    background: rgba(28,43,58,0.06);
+    padding: 1px 6px;
+    border-radius: 3px;
+  }
+
+  /* ---------- LAYOUT ---------- */
+  .container {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ---------- HERO ---------- */
+  .hero {
+    padding: 80px 24px 60px;
+    text-align: center;
+    border-bottom: 1px solid var(--line);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before, .hero::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 30%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--line), transparent);
+  }
+  .hero::before { left: 0; }
+  .hero::after { right: 0; }
+
+  .chapter-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--amber-deep);
+    margin-bottom: 20px;
+    display: inline-block;
+    padding: 6px 14px;
+    border: 1px solid var(--amber);
+    border-radius: 2px;
+  }
+
+  .hero h1 {
+    font-size: clamp(36px, 5.5vw, 60px);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin: 12px auto 18px;
+    max-width: 800px;
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    color: var(--amber-deep);
+    font-weight: 500;
+  }
+
+  .hero .subtitle {
+    font-style: italic;
+    color: var(--ink-soft);
+    max-width: 540px;
+    margin: 0 auto 40px;
+    font-size: 18px;
+  }
+
+  .compass-wrapper {
+    width: 220px;
+    height: 220px;
+    margin: 30px auto 10px;
+  }
+
+  .compass {
+    width: 100%;
+    height: 100%;
+    animation: spin 60s linear infinite;
+  }
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  /* ---------- LEARNING OUTCOMES ---------- */
+  .outcomes {
+    background: var(--parchment-dark);
+    border-top: 2px solid var(--amber);
+    border-bottom: 2px solid var(--amber);
+    padding: 40px 0;
+    margin: 0;
+  }
+
+  .outcomes h2 {
+    font-size: 14px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--amber-deep);
+    text-align: center;
+    margin-bottom: 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+  }
+
+  .outcome-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+  }
+
+  .outcome-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 15px;
+  }
+
+  .outcome-item .check {
+    color: var(--teal);
+    font-size: 22px;
+    line-height: 1;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  /* ---------- SECTION ---------- */
+  section.lesson {
+    padding: 64px 0 48px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 18px;
+    margin-bottom: 28px;
+    padding-bottom: 12px;
+    border-bottom: 1px dashed var(--line);
+  }
+
+  .section-num {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 900;
+    font-size: 56px;
+    color: var(--amber);
+    line-height: 0.9;
+    flex-shrink: 0;
+  }
+
+  .section-header h2 {
+    font-size: 30px;
+    flex: 1;
+  }
+
+  .lesson p {
+    margin-bottom: 16px;
+    color: var(--ink-soft);
+  }
+
+  .lesson p strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  /* ---------- KEY FACT BOX ---------- */
+  .keyfact {
+    background: linear-gradient(135deg, rgba(201,136,43,0.08), rgba(201,136,43,0.03));
+    border-left: 4px solid var(--amber);
+    padding: 18px 24px;
+    margin: 24px 0;
+    border-radius: 0 6px 6px 0;
+    position: relative;
+  }
+
+  .keyfact::before {
+    content: 'KEY FACT';
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--amber-deep);
+    font-weight: 700;
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  /* ---------- DID YOU KNOW BOX ---------- */
+  .didyouknow {
+    background: linear-gradient(135deg, rgba(44,95,93,0.08), rgba(44,95,93,0.02));
+    border-left: 4px solid var(--teal);
+    padding: 18px 24px;
+    margin: 24px 0;
+    border-radius: 0 6px 6px 0;
+  }
+
+  .didyouknow::before {
+    content: '✦  DID YOU KNOW?';
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--teal);
+    font-weight: 700;
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  /* ---------- MNEMONIC BOX ---------- */
+  .mnemonic {
+    background: var(--parchment-dark);
+    border: 1px solid var(--amber);
+    border-radius: 8px;
+    padding: 22px 28px;
+    margin: 28px 0;
+    text-align: center;
+    position: relative;
+  }
+
+  .mnemonic::before {
+    content: '🧠 MEMORY HOOK';
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--amber-deep);
+    font-weight: 700;
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  .mnemonic .hook {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 22px;
+    color: var(--ink);
+    line-height: 1.4;
+  }
+
+  /* ---------- FLIP CARDS ---------- */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin: 32px 0;
+  }
+
+  .flip-card {
+    perspective: 1000px;
+    height: 160px;
+    cursor: pointer;
+  }
+
+  .flip-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+  }
+
+  .flip-card.flipped .flip-card-inner {
+    transform: rotateY(180deg);
+  }
+
+  .flip-card-front, .flip-card-back {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    border-radius: 8px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(28,43,58,0.08);
+  }
+
+  .flip-card-front {
+    background: var(--parchment-dark);
+    border: 1px solid var(--line);
+  }
+
+  .flip-card-front .term {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 19px;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .flip-card-front .hint {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--ink-faded);
+    text-transform: uppercase;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .flip-card-back {
+    background: var(--ink);
+    color: var(--parchment);
+    transform: rotateY(180deg);
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  .flip-card-back strong { color: var(--amber); }
+
+  /* ---------- COMPARE TABS ---------- */
+  .tabs {
+    display: flex;
+    gap: 0;
+    margin: 24px 0 0;
+    border-bottom: 2px solid var(--line);
+  }
+
+  .tab-btn {
+    flex: 1;
+    padding: 14px 16px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: 'Fraunces', serif;
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--ink-faded);
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.2s;
+  }
+
+  .tab-btn:hover { color: var(--ink); }
+
+  .tab-btn.active {
+    color: var(--amber-deep);
+    border-bottom-color: var(--amber);
+  }
+
+  .tab-content {
+    display: none;
+    padding: 24px 4px;
+    animation: fadeIn 0.3s;
+  }
+
+  .tab-content.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ---------- INTERACTIVE EARTH PLOTTER ---------- */
+  .interactive-plotter {
+    background: var(--parchment-dark);
+    border-radius: 12px;
+    padding: 28px;
+    margin: 32px 0;
+    border: 1px solid var(--amber);
+  }
+
+  .plotter-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--amber-deep);
+    font-weight: 700;
+    margin-bottom: 14px;
+  }
+
+  .plotter-title h3 {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    margin-top: 6px;
+    letter-spacing: normal;
+    text-transform: none;
+    font-weight: 600;
+  }
+
+  .plotter-canvas {
+    background: var(--parchment);
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 16px;
+    cursor: crosshair;
+    user-select: none;
+  }
+
+  .plotter-readout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 16px;
+  }
+
+  .readout-box {
+    background: var(--ink);
+    color: var(--parchment);
+    padding: 14px 18px;
+    border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .readout-box .label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--amber);
+    margin-bottom: 4px;
+  }
+
+  .readout-box .value {
+    font-size: 22px;
+    font-weight: 700;
+  }
+
+  /* ---------- ANALOGY CALLOUT ---------- */
+  .analogy {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin: 32px 0;
+  }
+
+  .analogy-card {
+    background: var(--parchment-dark);
+    border-radius: 10px;
+    padding: 24px;
+    text-align: center;
+    border: 1px solid var(--line);
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+
+  .analogy-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 24px rgba(28,43,58,0.12);
+  }
+
+  .analogy-card .emoji {
+    font-size: 56px;
+    display: block;
+    margin-bottom: 12px;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+  }
+
+  .analogy-card h4 {
+    font-size: 20px;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .analogy-card p {
+    font-size: 15px;
+    color: var(--ink-soft);
+    margin: 0;
+  }
+
+  /* ---------- ACCURACY TABLE ---------- */
+  table.accuracy {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 24px 0;
+    background: var(--parchment-dark);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(28,43,58,0.06);
+  }
+
+  table.accuracy th {
+    background: var(--ink);
+    color: var(--parchment);
+    padding: 14px 16px;
+    text-align: left;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  table.accuracy td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--line);
+    font-size: 15px;
+  }
+
+  table.accuracy tr:last-child td { border-bottom: none; }
+
+  table.accuracy td:first-child {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--amber-deep);
+    font-weight: 600;
+  }
+
+  table.accuracy tr:nth-child(even) { background: rgba(28,43,58,0.025); }
+
+  /* ---------- QUIZ ---------- */
+  .quiz-section {
+    background: var(--ink);
+    color: var(--parchment);
+    padding: 64px 0;
+    margin: 64px 0 0;
+  }
+
+  .quiz-section .section-header {
+    border-bottom-color: rgba(244,236,216,0.2);
+  }
+
+  .quiz-section .section-header h2 { color: var(--parchment); }
+  .quiz-section .section-num { color: var(--amber); }
+
+  .quiz-card {
+    background: rgba(244,236,216,0.04);
+    border: 1px solid rgba(244,236,216,0.15);
+    border-radius: 10px;
+    padding: 28px;
+    margin: 20px 0;
+  }
+
+  .quiz-q {
+    font-family: 'Fraunces', serif;
+    font-size: 19px;
+    font-weight: 500;
+    margin-bottom: 18px;
+    color: var(--parchment);
+    line-height: 1.45;
+  }
+
+  .quiz-q .qnum {
+    font-style: italic;
+    color: var(--amber);
+    margin-right: 8px;
+  }
+
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .option {
+    background: rgba(244,236,216,0.06);
+    border: 1px solid rgba(244,236,216,0.18);
+    color: var(--parchment);
+    padding: 12px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: left;
+    font-family: 'Lora', serif;
+    font-size: 15px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .option:hover {
+    background: rgba(244,236,216,0.1);
+    border-color: rgba(244,236,216,0.35);
+  }
+
+  .option .letter {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--amber);
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .option.correct {
+    background: rgba(44,95,93,0.4);
+    border-color: var(--teal-soft);
+    color: var(--parchment);
+  }
+
+  .option.correct .letter { color: #6fc7a8; }
+
+  .option.wrong {
+    background: rgba(168,68,58,0.3);
+    border-color: var(--rust-soft);
+  }
+
+  .option.wrong .letter { color: var(--rust-soft); }
+
+  .feedback {
+    margin-top: 14px;
+    padding: 14px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    line-height: 1.5;
+    display: none;
+    border-left: 3px solid var(--amber);
+    background: rgba(201,136,43,0.1);
+  }
+
+  .feedback.show { display: block; animation: fadeIn 0.3s; }
+
+  .feedback strong { color: var(--amber); }
+
+  /* ---------- POCKETBOOK ---------- */
+  .pocketbook {
+    background: var(--amber-deep);
+    color: var(--parchment);
+    padding: 64px 0;
+    background-image:
+      repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(0,0,0,0.04) 20px, rgba(0,0,0,0.04) 21px);
+  }
+
+  .pocketbook h2 {
+    color: var(--parchment);
+    text-align: center;
+    font-size: 36px;
+    margin-bottom: 8px;
+  }
+
+  .pocketbook .pb-sub {
+    text-align: center;
+    font-style: italic;
+    margin-bottom: 36px;
+    opacity: 0.85;
+  }
+
+  .pb-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 14px;
+  }
+
+  .pb-item {
+    background: rgba(0,0,0,0.15);
+    padding: 16px 20px;
+    border-radius: 6px;
+    border-left: 3px solid var(--parchment);
+  }
+
+  .pb-item .pb-key {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    opacity: 0.8;
+    margin-bottom: 4px;
+  }
+
+  .pb-item .pb-val {
+    font-family: 'Fraunces', serif;
+    font-size: 17px;
+    font-weight: 500;
+  }
+
+  /* ---------- FOOTER NAV ---------- */
+  footer {
+    text-align: center;
+    padding: 48px 24px;
+    color: var(--ink-faded);
+    font-size: 14px;
+    font-style: italic;
+  }
+
+  footer .next {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 12px 24px;
+    background: var(--ink);
+    color: var(--parchment);
+    text-decoration: none;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-style: normal;
+  }
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width: 640px) {
+    body { font-size: 16px; }
+    .hero h1 { font-size: 32px; }
+    .section-num { font-size: 40px; }
+    .section-header h2 { font-size: 22px; }
+    .analogy { grid-template-columns: 1fr; }
+    .plotter-readout { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============= HERO ============= -->
+<header class="hero">
+  <div class="container">
+    <div class="chapter-tag">Chapter 01 · Pilot's Logbook</div>
+    <h1>Direction, Latitude <em>&</em> Longitude</h1>
+    <p class="subtitle">Where on Earth are we, exactly? Before we can navigate anywhere, we need a way to pinpoint <em>any</em> spot on the planet.</p>
+
+    <div class="compass-wrapper">
+      <svg class="compass" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="compassBg" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#f4ecd8"/>
+            <stop offset="100%" stop-color="#d9c89e"/>
+          </radialGradient>
+        </defs>
+        <circle cx="100" cy="100" r="92" fill="url(#compassBg)" stroke="#1c2b3a" stroke-width="2"/>
+        <circle cx="100" cy="100" r="78" fill="none" stroke="#1c2b3a" stroke-width="0.5" stroke-dasharray="2 4"/>
+        <!-- Cardinal points -->
+        <text x="100" y="22" text-anchor="middle" font-family="Fraunces" font-size="18" font-weight="700" fill="#a36918">N</text>
+        <text x="180" y="106" text-anchor="middle" font-family="Fraunces" font-size="14" font-weight="600" fill="#1c2b3a">E</text>
+        <text x="100" y="190" text-anchor="middle" font-family="Fraunces" font-size="14" font-weight="600" fill="#1c2b3a">S</text>
+        <text x="20" y="106" text-anchor="middle" font-family="Fraunces" font-size="14" font-weight="600" fill="#1c2b3a">W</text>
+        <!-- Tick marks every 30 -->
+        <g stroke="#1c2b3a" stroke-width="1">
+          <line x1="100" y1="14" x2="100" y2="22"/>
+          <line x1="100" y1="186" x2="100" y2="178"/>
+          <line x1="14" y1="100" x2="22" y2="100"/>
+          <line x1="186" y1="100" x2="178" y2="100"/>
+        </g>
+        <!-- Compass star -->
+        <polygon points="100,32 108,100 100,168 92,100" fill="#a36918" opacity="0.85"/>
+        <polygon points="32,100 100,92 168,100 100,108" fill="#1c2b3a" opacity="0.9"/>
+        <circle cx="100" cy="100" r="6" fill="#f4ecd8" stroke="#1c2b3a" stroke-width="1.5"/>
+      </svg>
+    </div>
+    <p style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--ink-faded); letter-spacing: 0.15em;">EST. ATPL · BOOK 10 · GENERAL NAVIGATION</p>
+  </div>
+</header>
+
+<!-- ============= LEARNING OUTCOMES ============= -->
+<div class="outcomes">
+  <div class="container">
+    <h2>By the end of this chapter, you'll know</h2>
+    <div class="outcome-grid">
+      <div class="outcome-item"><span class="check">✓</span><span>The Earth's true shape — and why we treat it as a sphere anyway</span></div>
+      <div class="outcome-item"><span class="check">✓</span><span>What Great Circles, Small Circles & Meridians actually are</span></div>
+      <div class="outcome-item"><span class="check">✓</span><span>How latitude & longitude pin down any point on Earth</span></div>
+      <div class="outcome-item"><span class="check">✓</span><span>The magic rule: 1 minute of arc = 1 nautical mile</span></div>
+      <div class="outcome-item"><span class="check">✓</span><span>How position precision scales from kilometres down to centimetres</span></div>
+      <div class="outcome-item"><span class="check">✓</span><span>Great Circle vertices and how to work them out</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============= SECTION 1 ============= -->
+<section class="lesson">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-num">01</div>
+      <h2>The Shape of the Earth</h2>
+    </div>
+
+    <p>Quick question: the Earth is a sphere, right? <em>Almost.</em> It's actually an <strong>oblate spheroid</strong> — a sphere that's been gently squashed at the top and bottom. When the Earth was forming from a spinning gas cloud, the equator got flung outward by centrifugal force while the poles stayed put.</p>
+
+    <div class="keyfact">
+      The Earth's polar diameter is <strong>23 nautical miles (43 km)</strong> shorter than its equatorial diameter. The flattening, called <strong>compression</strong>, is about <strong>0.3%</strong> (or 1/300th).
+    </div>
+
+    <p>It gets weirder. Satellite surveys show the Earth is also slightly <em>pear-shaped</em>, with its widest bulge a bit south of the Equator. But this distortion is in tens of metres — tiny compared to the polar squashing.</p>
+
+    <p>Because the Earth isn't a perfect sphere, an ellipse, or anything else neat, mathematicians just gave up and called its shape "Earth-shaped" — which is what the Greek word <strong>geoid</strong> literally means. (Yes, really.)</p>
+
+    <div class="didyouknow">
+      Different countries used to use different geoid models. The UK's was based on a 1936 survey (OS36), France used NTF70, the US used WGS 84. Now <strong>ICAO has adopted WGS 84 as the world standard</strong> — because GPS made the differences (up to 200 m) actually matter. A cruise missile programmer would care a lot about which model you used!
+    </div>
+
+    <p style="margin-top: 24px; font-style: italic; color: var(--ink-soft);">For exam calculations, we treat the Earth as a perfect sphere with circumference <span class="mono">21,600 NM</span> or <span class="mono">40,000 km</span>.</p>
+  </div>
+</section>
+
+<!-- ============= SECTION 2 ============= -->
+<section class="lesson">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-num">02</div>
+      <h2>The Cardinal Points</h2>
+    </div>
+
+    <p>How do we even start defining "directions" on a planet? We need a <strong>datum</strong> — a starting reference. The most natural one is the direction the Earth spins.</p>
+
+    <div class="keyfact">
+      <strong>East</strong> is defined as the direction the Earth spins (which is why the sun rises in the east). <strong>West</strong> is the opposite. Now face East: the pole on your <em>left</em> is the <strong>North Pole</strong>. The opposite is the <strong>South Pole</strong>.
+    </div>
+
+    <p>The four directions <strong>N, E, S, W</strong> are the <strong>Cardinal Points</strong>. The four in-between directions — <strong>NE, SE, SW, NW</strong> — are the <strong>Quadrantal directions</strong>.</p>
+
+    <div class="mnemonic">
+      <div class="hook">"Looking down from the North Pole, the Earth spins anti-clockwise.<br>Looking down from the South Pole, it spins clockwise."</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============= SECTION 3 — GREAT VS SMALL CIRCLES ============= -->
+<section class="lesson">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-num">03</div>
+      <h2>Great Circles vs Small Circles</h2>
+    </div>
+
+    <p>This is one of those concepts that sounds abstract until you really see it. So let's draw the difference:</p>
+
+    <!-- SVG diagram of great vs small circle -->
+    <div style="text-align: center; margin: 24px 0;">
+      <svg viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg" style="max-width: 100%; height: auto;">
+        <defs>
+          <radialGradient id="earthFill" cx="35%" cy="35%" r="65%">
+            <stop offset="0%" stop-color="#4a8480"/>
+            <stop offset="70%" stop-color="#2c5f5d"/>
+            <stop offset="100%" stop-color="#1c3f3d"/>
+          </radialGradient>
+        </defs>
+        <!-- LEFT: Great Circle -->
+        <g transform="translate(150,150)">
+          <circle r="100" fill="url(#earthFill)" opacity="0.9"/>
+          <ellipse cx="0" cy="0" rx="100" ry="20" fill="none" stroke="#c9882b" stroke-width="3"/>
+          <text x="0" y="-120" text-anchor="middle" font-family="Fraunces" font-size="18" font-weight="600" fill="#1c2b3a">Great Circle</text>
+          <text x="0" y="135" text-anchor="middle" font-family="Lora" font-style="italic" font-size="13" fill="#3a4b5c">Centre = Earth's centre</text>
+          <circle r="3" fill="#c9882b"/>
+        </g>
+        <!-- RIGHT: Small Circle -->
+        <g transform="translate(450,150)">
+          <circle r="100" fill="url(#earthFill)" opacity="0.9"/>
+          <ellipse cx="0" cy="-50" rx="80" ry="14" fill="none" stroke="#a8443a" stroke-width="3"/>
+          <text x="0" y="-120" text-anchor="middle" font-family="Fraunces" font-size="18" font-weight="600" fill="#1c2b3a">Small Circle</text>
+          <text x="0" y="135" text-anchor="middle" font-family="Lora" font-style="italic" font-size="13" fill="#3a4b5c">Centre ≠ Earth's centre</text>
+          <circle cx="0" cy="-50" r="3" fill="#a8443a"/>
+        </g>
+      </svg>
+    </div>
+
+    <div class="keyfact">
+      A <strong>Great Circle</strong> is any circle on Earth's surface whose centre is the centre of the Earth (so its radius equals Earth's radius). A <strong>Small Circle</strong> is any other circle on the surface — its centre is somewhere off to the side.
+    </div>
+
+    <p>Why do we care? Because the <strong>shortest distance between any two points on Earth's surface is the shorter arc of the Great Circle joining them</strong>. This is why long-haul flights from London to Tokyo curve up over the Arctic on the map — that's the actual straightest path on the globe.</p>
+
+    <div class="didyouknow">
+      Between any two points on Earth, there's only <em>one</em> Great Circle joining them — unless the points are exactly opposite each other (antipodal), in which case infinitely many Great Circles pass through both!
+    </div>
+  </div>
+</section>
+
+<!-- ============= SECTION 4 — EQUATOR & MERIDIANS ============= -->
+<section class="lesson">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-num">04</div>
+      <h2>The Equator & The Meridians</h2>
+    </div>
+
+    <p>Now that we understand Great Circles, let's name the special ones:</p>
+
+    <div class="card-grid">
+      <div class="flip-card" onclick="this.classList.toggle('flipped')">
+        <div class="flip-card-inner">
+          <div class="flip-card-front">
+            <div class="term">The Equator</div>
+            <div class="hint">Tap to reveal</div>
+          </div>
+          <div class="flip-card-back">
+            The <strong>Great Circle</strong> at 90° to the polar axis. Splits Earth into N & S hemispheres. The <strong>datum for latitude</strong> (like the X-axis on graph paper).
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-card" onclick="this.classList.toggle('flipped')">
+        <div class="flip-card-inner">
+          <div class="flip-card-front">
+            <div class="term">Meridians</div>
+            <div class="hint">Tap to reveal</div>
+          </div>
+          <div class="flip-card-back">
+            <strong>Semi-Great Circles</strong> joining the North & South poles. They all run True N–S. Every Great Circle through the poles makes a meridian + its anti-meridian.
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-card" onclick="this.classList.toggle('flipped')">
+        <div class="flip-card-inner">
+          <div class="flip-card-front">
+            <div class="term">Prime Meridian</div>
+            <div class="hint">Tap to reveal</div>
+          </div>
+          <div class="flip-card-back">
+            The meridian through <strong>Greenwich, London</strong>. The <strong>datum for longitude</strong> (like the Y-axis). Everything is measured E or W from here.
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-card" onclick="this.classList.toggle('flipped')">
+        <div class="flip-card-inner">
+          <div class="flip-card-front">
+            <div class="term">Parallels of Latitude</div>
+            <div class="hint">Tap to reveal</div>
+          </div>
+          <div class="flip-card-back">
+            <strong>Small Circles</strong> parallel to the Equator. They run E–W. They tell us how far N or S of the Equator we are. Only the Equator itself is a Great Circle.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p>Together, this network of meridians and parallels forms the <strong>graticule</strong> — the lat/long grid you see on every globe. It's the spherical version of graph paper.</p>
+  </div>
+</section>
+
+<!-- ============= SECTION 5 — LAT VS LONG (with analogy) ============= -->
+<section class="lesson">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-num">05</div>
+      <h2>Latitude vs Longitude — The Big Difference</h2>
+    </div>
+
+    <p>Lat and long sound similar but they work in <em>completely different</em> ways. The textbook gives a beautiful food analogy that makes this stick forever:</p>
+
+    <div class="analogy">
+      <div class="analogy-card">
+        <span class="emoji">🍍</span>
+        <h4>Latitude = Pineapple slices</h4>
+        <p>Parallels of latitude are <strong>parallel</strong> to each other — like horizontal slices through a pineapple. They never meet.</p>
+      </div>
+      <div class="analogy-card">
+        <span class="emoji">🍊</span>
+        <h4>Longitude = Orange segments</h4>
+        <p>Meridians of longitude all <strong>meet at the poles</strong> — like segments of an orange. Maximum spacing at the Equator, zero at the poles.</p>
+      </div>
+    </div>
+
+    <div class="mnemonic">
+      <div class="hook">"<strong>LAT</strong>itude is <strong>FLAT</strong>itude.<br>(They rhyme — and parallels of latitude are flat, horizontal lines.)"</div>
+    </div>
+
+    <h3 style="margin-top: 32px; font-size: 22px;">Latitude — How far N or S?</h3>
+    <p><strong>Latitude</strong> is the angular distance measured along a meridian from the Equator to your point. Annotated <strong>N</strong> or <strong>S</strong>.</p>
+    <ul style="margin: 12px 0 16px 32px; color: var(--ink-soft);">
+      <li>Equator: <span class="mono">0°</span></li>
+      <li>North Pole: <span class="mono">90°N</span></li>
+      <li>South Pole: <span class="mono">90°S</span></li>
+      <li>Range: 0° to 90° (N or S)</li>
+    </ul>
+
+    <h3 style="margin-top: 24px; font-size: 22px;">Longitude — How far E or W?</h3>
+    <p><strong>Longitude</strong> is the shorter arc along the Equator between the Prime Meridian and the meridian through your point. Annotated <strong>E</strong> or <strong>W</strong>.</p>
+    <ul style="margin: 12px 0 16px 32px; color: var(--ink-soft);">
+      <li>Prime Meridian: <span class="mono">0°</span></li>
+      <li>Greenwich Anti-Meridian: <span class="mono">180°</span> (same line, called either 180°E or 180°W)</li>
+      <li>Range: 0° to 180° (E or W)</li>
+    </ul>
+
+    <!-- Tabs: Geocentric vs Geodetic -->
+    <h3 style="margin-top: 36px; font-size: 22px;">Two flavours of Latitude — and yes, this is on the exam</h3>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="showTab(event, 'geocentric')">Geocentric</button>
+      <button class="tab-btn" onclick="showTab(event, 'geodetic')">Geodetic</button>
+    </div>
+    <div id="geocentric" class="tab-content active">
+      <p><strong>Geocentric Latitude</strong> = the angle between the Equator and a line from the <strong>centre of the Earth</strong> to your point.</p>
+      <p style="font-size: 14px; color: var(--ink-faded); font-style: italic;">If the Earth were a perfect sphere, this is the only definition you'd need.</p>
+    </div>
+    <div id="geodetic" class="tab-content">
+      <p><strong>Geodetic (or Geographic) Latitude</strong> = the angle between the Equator and the <em>normal</em> to the Earth's surface at your point. Because the Earth is squashed, this normal doesn't always pass through Earth's centre.</p>
+      <div class="keyfact" style="margin-top: 12px;">
+        <strong>Charts use geodetic latitude.</strong> The maximum difference between geodetic and geocentric is about <strong>11.6 minutes of arc</strong>, occurring at roughly 45°N/S.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============= SECTION 6 — INTERACTIVE PLOTTER ============= -->
+<section class="lesson">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-num">06</div>
+      <h2>Try It — Plot a Position</h2>
+    </div>
+
+    <p>Click anywhere on the globe below and watch the latitude and longitude appear in real time. Notice how the same E–W movement near the equator means more distance than near the poles!</p>
+
+    <div class="interactive-plotter">
+      <div class="plotter-title">
+        Live Position Plotter
+        <h3>Where on Earth did you click?</h3>
+      </div>
+
+      <div class="plotter-canvas">
+        <svg id="plotter-svg" viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: auto; cursor: crosshair;">
+          <defs>
+            <pattern id="graticule" x="0" y="0" width="30" height="30" patternUnits="userSpaceOnUse">
+              <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#1c2b3a" stroke-width="0.4" opacity="0.25"/>
+            </pattern>
+          </defs>
+          <!-- Background -->
+          <rect width="600" height="300" fill="#d9c89e"/>
+          <rect width="600" height="300" fill="url(#graticule)"/>
+
+          <!-- Land masses (simplified silhouette) -->
+          <g fill="#2c5f5d" opacity="0.7">
+            <!-- Africa -->
+            <path d="M 305,140 Q 320,135 330,150 L 335,180 Q 330,210 320,225 L 310,235 Q 300,225 295,210 L 290,180 Q 295,155 305,140 Z"/>
+            <!-- Europe -->
+            <path d="M 280,110 Q 300,108 320,115 L 335,118 Q 340,125 330,135 L 310,138 Q 290,135 280,125 Z"/>
+            <!-- Asia -->
+            <path d="M 340,105 Q 380,98 420,108 L 460,115 Q 480,125 470,140 L 440,150 Q 400,148 360,140 L 340,130 Z"/>
+            <!-- North America -->
+            <path d="M 130,110 Q 160,100 195,115 L 220,125 Q 230,140 215,160 L 195,175 Q 165,175 145,165 L 125,145 Q 115,128 130,110 Z"/>
+            <!-- South America -->
+            <path d="M 195,180 Q 215,178 225,195 L 220,225 Q 215,250 200,260 L 190,255 Q 180,235 185,210 L 195,180 Z"/>
+            <!-- Australia -->
+            <path d="M 470,210 Q 495,205 510,215 L 515,225 Q 510,235 495,238 L 478,235 Q 470,225 470,210 Z"/>
+          </g>
+
+          <!-- Equator -->
+          <line x1="0" y1="150" x2="600" y2="150" stroke="#a8443a" stroke-width="1.5" stroke-dasharray="6 3"/>
+          <text x="585" y="146" font-family="JetBrains Mono" font-size="9" fill="#a8443a" text-anchor="end">EQUATOR</text>
+
+          <!-- Prime Meridian -->
+          <line x1="300" y1="0" x2="300" y2="300" stroke="#c9882b" stroke-width="1.5" stroke-dasharray="6 3"/>
+          <text x="304" y="14" font-family="JetBrains Mono" font-size="9" fill="#a36918">PRIME MERIDIAN</text>
+
+          <!-- Click marker (will be moved by JS) -->
+          <g id="click-marker" style="display: none;">
+            <circle id="click-circle" cx="300" cy="150" r="6" fill="#1c2b3a" stroke="#f4ecd8" stroke-width="2"/>
+            <circle cx="300" cy="150" r="12" fill="none" stroke="#1c2b3a" stroke-width="1" opacity="0.4">
+              <animate attributeName="r" from="6" to="20" dur="1.5s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" from="0.6" to="0" dur="1.5s" repeatCount="indefinite"/>
+            </circle>
+          </g>
+
+          <!-- Axis labels -->
+          <text x="10" y="20" font-family="JetBrains Mono" font-size="10" fill="#1c2b3a">90°N</text>
+          <text x="10" y="290" font-family="JetBrains Mono" font-size="10" fill="#1c2b3a">90°S</text>
+          <text x="10" y="295" font-family="JetBrains Mono" font-size="9" fill="#1c2b3a">180°W</text>
+          <text x="555" y="295" font-family="JetBrains Mono" font-size="9" fill="#1c2b3a">180°E</text>
+        </svg>
+      </div>
+
+      <div class="plotter-readout">
+        <div class="readout-box">
+          <div class="label">LATITUDE</div>
+          <div class="value" id="lat-readout">— click the map —</div>
+        </div>
+        <div class="readout-box">
+          <div class="label">LONGITUDE</div>
+          <div class="value" id="lng-readout">— click the map —</div>
+        </div>
+      </div>
+
+      <p style="margin-top: 14px; font-size: 13px; color: var(--ink-soft); font-style: italic;">
+        💡 Try clicking near London (close to where the orange Prime Meridian meets ~51°N), then near Chennai (~13°N, 80°E), then near Sydney (~33°S, 151°E).
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============= SECTION 7 — POSITION NOTATION & ACCURACY ============= -->
+<section class="lesson">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-num">07</div>
+      <h2>Writing Positions & The Accuracy Game</h2>
+    </div>
+
+    <p><strong>Always: latitude first, longitude second.</strong> New York is <span class="mono">41°N 074°W</span>. Oxford Airport's reference point is <span class="mono">5150N 00119W</span>.</p>
+
+    <p>The number of digits you write isn't just style — it <em>declares</em> how precisely you know your position. Here's the game:</p>
+
+    <table class="accuracy">
+      <thead>
+        <tr>
+          <th>How you write it</th>
+          <th>Accuracy claimed</th>
+          <th>Where you'd see it</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>5321N</td>
+          <td>1 NM (6,080 ft)</td>
+          <td>En-route navigation</td>
+        </tr>
+        <tr>
+          <td>5321.3N</td>
+          <td>600 ft (185 m)</td>
+          <td>INS, IRS, FMS, GPS displays</td>
+        </tr>
+        <tr>
+          <td>53°21'17"N</td>
+          <td>100 ft (30 m)</td>
+          <td>Airfield diagram chart</td>
+        </tr>
+        <tr>
+          <td>53°21'17.3"N</td>
+          <td>10 ft (3 m)</td>
+          <td>Precision navaid (ILS)</td>
+        </tr>
+        <tr>
+          <td>53°21'17.32"N</td>
+          <td>1 ft (30 cm)</td>
+          <td>Calibration of precision navaid</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="didyouknow">
+      The OX locator beacon at Oxford is published as <span class="mono">515000.28N 001924.45W</span> — accurate to within <strong>50 cm</strong>. Two decimals of a second of arc, just for a low-power homing beacon. Aviation does not mess around.
+    </div>
+  </div>
+</section>
+
+<!-- ============= SECTION 8 — DISTANCE RULE ============= -->
+<section class="lesson">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-num">08</div>
+      <h2>The Magic Rule: 1' of Arc = 1 NM</h2>
+    </div>
+
+    <p>This is one of the most important rules in all of navigation. Memorise it, tattoo it, frame it:</p>
+
+    <div class="mnemonic">
+      <div class="hook">"On any Great Circle,<br><strong>1 minute of arc = 1 nautical mile</strong>"</div>
+    </div>
+
+    <p>Why does this work? Because the nautical mile was <em>defined</em> to make this true. Earth's mean radius is about 20.9 million feet, which makes 1 minute of arc on a Great Circle equal to <strong>6,080 feet</strong> — and that's the nautical mile.</p>
+
+    <div class="keyfact">
+      The official ICAO definition: <strong>1 NM = 1,852 metres</strong>. (Slight rounding from the 6,080 ft definition.)
+    </div>
+
+    <h3 style="margin-top: 24px; font-size: 20px;">When can you use this rule for longitude?</h3>
+    <p>Only at the <strong>Equator</strong>. Why? Because the Equator is the <em>only</em> parallel of latitude that's also a Great Circle. Other parallels are Small Circles, so the rule doesn't apply directly.</p>
+    <p>For latitude, though? It always works — because every meridian <em>is</em> a Great Circle.</p>
+
+    <div class="didyouknow">
+      <strong>Worked example:</strong> The difference in latitude between <span class="mono">5000N 00100W</span> and <span class="mono">5005N 00100W</span> is exactly 5 minutes — so they are exactly <strong>5 nautical miles</strong> apart. Effortless.
+    </div>
+  </div>
+</section>
+
+<!-- ============= SECTION 9 — GREAT CIRCLE VERTICES ============= -->
+<section class="lesson">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-num">09</div>
+      <h2>Great Circle Vertices</h2>
+    </div>
+
+    <p>Every Great Circle (other than the Equator and meridians) has a <strong>highest</strong> point and a <strong>lowest</strong> point. These are called the <strong>vertices</strong> — northern and southern.</p>
+
+    <div class="keyfact">
+      The two vertices are <strong>antipodal</strong> (on opposite sides of the Earth) and the Great Circle distance between them is exactly <strong>10,800 NM</strong> — half the Earth's circumference.
+    </div>
+
+    <h3 style="margin-top: 20px; font-size: 20px;">Three things you can work out from one vertex:</h3>
+    <ol style="margin: 12px 0 16px 32px; color: var(--ink-soft);">
+      <li style="margin-bottom: 6px;">The other vertex has the <strong>same latitude value but opposite sign</strong>, and is on the <strong>anti-meridian</strong>.</li>
+      <li style="margin-bottom: 6px;">At the vertex, the Great Circle's direction is exactly <strong>090°(T) East</strong> or <strong>270°(T) West</strong>.</li>
+      <li>The Great Circle crosses the <strong>Equator</strong> at two points <strong>90° change of longitude</strong> from either vertex.</li>
+    </ol>
+
+    <h3 style="margin-top: 20px; font-size: 20px;">The track angle at the Equator crossing</h3>
+    <p>The angle at which the GC crosses the Equator depends on the latitude of its vertex. If a vertex is at latitude <strong>L</strong>, the track angle at the Equator (going east, first crossing) is:</p>
+
+    <div class="mnemonic">
+      <div class="hook">First crossing (Eastbound): <strong>090° + L</strong><br>Second crossing (Eastbound): <strong>090° − L</strong><br>Westbound: take the reciprocals (180° opposite)</div>
+    </div>
+
+    <div class="didyouknow">
+      <strong>Worked example:</strong> A Great Circle has its northern vertex at <span class="mono">63°N 010°E</span>. Its southern vertex is at <span class="mono">63°S 170°W</span>. It crosses the Equator at longitudes <span class="mono">100°E</span> and <span class="mono">080°W</span>, and (eastbound) the track angles are <strong>153°</strong> at first crossing and <strong>027°</strong> at second crossing.
+    </div>
+  </div>
+</section>
+
+<!-- ============= QUIZ SECTION ============= -->
+<div class="quiz-section">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-num">QZ</div>
+      <h2>Test Yourself — 5 Questions</h2>
+    </div>
+
+    <p style="color: var(--parchment); opacity: 0.85; margin-bottom: 24px; font-style: italic;">No pressure. Tap an option to see if you're right — and to learn why.</p>
+
+    <!-- Q1 -->
+    <div class="quiz-card">
+      <div class="quiz-q"><span class="qnum">Q1.</span>What is the approximate compression of the Earth?</div>
+      <div class="options">
+        <button class="option" onclick="answer(this, false, 'q1', 'Too big — that would mean the poles are 3% squashed. The real number is much subtler.')"><span class="letter">A.</span> 3%</button>
+        <button class="option" onclick="answer(this, false, 'q1', 'Off by a factor of 10. Look at the relationship 1/300 = ?%')"><span class="letter">B.</span> 0.03%</button>
+        <button class="option" onclick="answer(this, true, 'q1', 'Spot on! 1/300 = 0.3%, which translates to roughly 23 NM (43 km) less polar diameter than equatorial.')"><span class="letter">C.</span> 0.3%</button>
+        <button class="option" onclick="answer(this, false, 'q1', 'That would be an even smaller squashing than reality. Compression is approximately 1/300, not 1/3000.')"><span class="letter">D.</span> 1/3000</button>
+      </div>
+      <div class="feedback" id="fb-q1"></div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="quiz-card">
+      <div class="quiz-q"><span class="qnum">Q2.</span>A "Graticule" is the name given to:</div>
+      <div class="options">
+        <button class="option" onclick="answer(this, false, 'q2', 'Too vague — it has to be the specific lat/long network.')"><span class="letter">A.</span> a series of lines drawn on a chart</button>
+        <button class="option" onclick="answer(this, true, 'q2', 'Yes! The graticule is the network of meridians and parallels — Earth\\'s version of graph paper.')"><span class="letter">B.</span> a series of latitude and longitude lines drawn on a chart or map</button>
+        <button class="option" onclick="answer(this, false, 'q2', 'No — those are just parallels of latitude near the poles. The graticule is the whole grid.')"><span class="letter">C.</span> a selection of small circles as you get nearer to either pole</button>
+      </div>
+      <div class="feedback" id="fb-q2"></div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="quiz-card">
+      <div class="quiz-q"><span class="qnum">Q3.</span>A Great Circle has its North vertex at <span class="mono" style="background: rgba(244,236,216,0.15); color: var(--amber);">70°N 130°E</span>. What is the position of its South vertex?</div>
+      <div class="options">
+        <button class="option" onclick="answer(this, false, 'q3', 'Same latitude is wrong — vertices are antipodal, so they have OPPOSITE signs. And longitude needs to flip across the anti-meridian too.')"><span class="letter">A.</span> 70°N 050°W</button>
+        <button class="option" onclick="answer(this, true, 'q3', 'Perfect. South vertex flips the latitude sign (70S) and goes to the anti-meridian: 180° − 130°E = 050°W.')"><span class="letter">B.</span> 70°S 050°W</button>
+        <button class="option" onclick="answer(this, false, 'q3', 'Latitude is right but longitude is wrong. The anti-meridian of 130°E is 050°W, not 130°W.')"><span class="letter">C.</span> 70°S 130°W</button>
+        <button class="option" onclick="answer(this, false, 'q3', 'Latitude needs to flip to South. Vertices are on opposite sides of the Earth.')"><span class="letter">D.</span> 70°N 130°W</button>
+      </div>
+      <div class="feedback" id="fb-q3"></div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="quiz-card">
+      <div class="quiz-q"><span class="qnum">Q4.</span>For the same Great Circle (vertex 70°N 130°E), at what <strong>longitude</strong> would it cross the Equator if travelling <strong>east</strong> from the North vertex?</div>
+      <div class="options">
+        <button class="option" onclick="answer(this, false, 'q4', 'That\\'s 90° WEST of the vertex — but going EAST you add 90°.')"><span class="letter">A.</span> 040°E</button>
+        <button class="option" onclick="answer(this, true, 'q4', 'Correct! Travelling east from 130°E, add 90°: 130°E + 90° = 220°E, which wraps around to 140°W. Direction at crossing: 90°+70°=160°(T).')"><span class="letter">B.</span> 140°W</button>
+        <button class="option" onclick="answer(this, false, 'q4', 'Close but flipped — 130°E going east goes towards the anti-meridian, ending up at 140°W not 140°E.')"><span class="letter">C.</span> 140°E</button>
+      </div>
+      <div class="feedback" id="fb-q4"></div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="quiz-card">
+      <div class="quiz-q"><span class="qnum">Q5.</span>The distance between <span class="mono" style="background: rgba(244,236,216,0.15); color: var(--amber);">5000N 00100W</span> and <span class="mono" style="background: rgba(244,236,216,0.15); color: var(--amber);">5012N 00100W</span> is:</div>
+      <div class="options">
+        <button class="option" onclick="answer(this, false, 'q5', 'Closer than that! Use the magic rule.')"><span class="letter">A.</span> 1.2 NM</button>
+        <button class="option" onclick="answer(this, true, 'q5', 'Yes! 12 minutes of latitude difference = 12 NM. Same longitude, on a meridian (Great Circle), 1 minute = 1 NM.')"><span class="letter">B.</span> 12 NM</button>
+        <button class="option" onclick="answer(this, false, 'q5', 'Too far. 12 minutes of arc = 12 NM, not 120. (And note: same longitude means we\\'re moving along a meridian.)')"><span class="letter">C.</span> 120 NM</button>
+        <button class="option" onclick="answer(this, false, 'q5', 'Way too small. The rule is 1 minute = 1 NM, not 1 minute = 0.1 NM.')"><span class="letter">D.</span> 1.2 km</button>
+      </div>
+      <div class="feedback" id="fb-q5"></div>
+    </div>
+
+    <div style="text-align: center; margin-top: 32px;">
+      <div id="score-display" style="font-family: 'Fraunces', serif; font-size: 22px; color: var(--amber); font-style: italic;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============= POCKETBOOK SUMMARY ============= -->
+<div class="pocketbook">
+  <div class="container">
+    <h2>Pilot's Pocketbook</h2>
+    <p class="pb-sub">The whole chapter, fits in your pocket.</p>
+    <div class="pb-grid">
+      <div class="pb-item"><div class="pb-key">Earth's Shape</div><div class="pb-val">Oblate spheroid · compression ≈ 0.3%</div></div>
+      <div class="pb-item"><div class="pb-key">Exam Earth</div><div class="pb-val">Sphere · 21,600 NM · 40,000 km</div></div>
+      <div class="pb-item"><div class="pb-key">Cardinal Points</div><div class="pb-val">N · E · S · W</div></div>
+      <div class="pb-item"><div class="pb-key">Great Circle</div><div class="pb-val">Centre = Earth's centre · shortest path</div></div>
+      <div class="pb-item"><div class="pb-key">Small Circle</div><div class="pb-val">Centre ≠ Earth's centre</div></div>
+      <div class="pb-item"><div class="pb-key">Equator</div><div class="pb-val">Datum for latitude · only parallel that's a Great Circle</div></div>
+      <div class="pb-item"><div class="pb-key">Prime Meridian</div><div class="pb-val">Through Greenwich · datum for longitude</div></div>
+      <div class="pb-item"><div class="pb-key">Latitude</div><div class="pb-val">0° to 90° N or S · pineapple slices</div></div>
+      <div class="pb-item"><div class="pb-key">Longitude</div><div class="pb-val">0° to 180° E or W · orange segments</div></div>
+      <div class="pb-item"><div class="pb-key">Magic Rule</div><div class="pb-val">1 min of arc = 1 NM (on Great Circle)</div></div>
+      <div class="pb-item"><div class="pb-key">1 NM</div><div class="pb-val">6,080 ft · 1,852 m</div></div>
+      <div class="pb-item"><div class="pb-key">GC Vertices</div><div class="pb-val">Antipodal · 10,800 NM apart · direction 090°/270°(T)</div></div>
+      <div class="pb-item"><div class="pb-key">Position Format</div><div class="pb-val">LAT first, LONG second · always</div></div>
+      <div class="pb-item"><div class="pb-key">World Standard</div><div class="pb-val">WGS 84 (ICAO)</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============= FOOTER ============= -->
+<footer>
+  <div class="container">
+    <p>End of Chapter 1. Onward.</p>
+    <a href="#" class="next">Chapter 2 → Great Circles & Rhumb Lines</a>
+  </div>
+</footer>
+
+<script>
+  // ===== TAB SWITCHER =====
+  function showTab(event, tabId) {
+    const parent = event.target.closest('.lesson').querySelector('.container');
+    parent.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    parent.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    event.target.classList.add('active');
+    document.getElementById(tabId).classList.add('active');
+  }
+
+  // ===== INTERACTIVE PLOTTER =====
+  const plotterSvg = document.getElementById('plotter-svg');
+  const marker = document.getElementById('click-marker');
+  const markerCircle = document.getElementById('click-circle');
+  const latReadout = document.getElementById('lat-readout');
+  const lngReadout = document.getElementById('lng-readout');
+
+  plotterSvg.addEventListener('click', (e) => {
+    const rect = plotterSvg.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 600;
+    const y = ((e.clientY - rect.top) / rect.height) * 300;
+
+    // Convert SVG coords to lat/long
+    // X: 0..600 -> -180..+180
+    // Y: 0..300 -> +90..-90
+    const lng = ((x / 600) * 360) - 180;
+    const lat = 90 - ((y / 300) * 180);
+
+    // Format
+    const latStr = formatCoord(lat, 'lat');
+    const lngStr = formatCoord(lng, 'lng');
+    latReadout.textContent = latStr;
+    lngReadout.textContent = lngStr;
+
+    marker.style.display = 'block';
+    markerCircle.setAttribute('cx', x);
+    markerCircle.setAttribute('cy', y);
+    // Update the animated circle too
+    const animCircle = marker.querySelector('circle:nth-child(2)');
+    animCircle.setAttribute('cx', x);
+    animCircle.setAttribute('cy', y);
+  });
+
+  function formatCoord(value, type) {
+    const abs = Math.abs(value);
+    const deg = Math.floor(abs);
+    const min = Math.round((abs - deg) * 60);
+    let suffix;
+    if (type === 'lat') suffix = value >= 0 ? 'N' : 'S';
+    else suffix = value >= 0 ? 'E' : 'W';
+    return `${deg.toString().padStart(type === 'lat' ? 2 : 3, '0')}°${min.toString().padStart(2, '0')}'${suffix}`;
+  }
+
+  // ===== QUIZ HANDLER =====
+  const quizState = {};
+
+  function answer(btn, isCorrect, qid, explanation) {
+    if (quizState[qid]) return; // Already answered
+    quizState[qid] = { correct: isCorrect };
+
+    const card = btn.closest('.quiz-card');
+    const allOptions = card.querySelectorAll('.option');
+    const feedback = document.getElementById('fb-' + qid);
+
+    // Lock all options
+    allOptions.forEach(o => o.style.cursor = 'default');
+
+    if (isCorrect) {
+      btn.classList.add('correct');
+    } else {
+      btn.classList.add('wrong');
+      // Reveal the correct one
+      allOptions.forEach(o => {
+        if (o.getAttribute('onclick').includes(', true,')) {
+          o.classList.add('correct');
+        }
+      });
+    }
+
+    feedback.innerHTML = `<strong>${isCorrect ? '✓ Correct.' : '✗ Not quite.'}</strong> ${explanation}`;
+    feedback.classList.add('show');
+
+    updateScore();
+  }
+
+  function updateScore() {
+    const total = Object.keys(quizState).length;
+    const correct = Object.values(quizState).filter(s => s.correct).length;
+    const display = document.getElementById('score-display');
+    if (total === 5) {
+      let msg;
+      if (correct === 5) msg = `🏆 Perfect — ${correct}/5. You're chapter-1 ready.`;
+      else if (correct >= 3) msg = `Solid — ${correct}/5. Review the ones you missed and you're set.`;
+      else msg = `${correct}/5 — flip through the cards above and try again. You've got this.`;
+      display.textContent = msg;
+    } else {
+      display.textContent = `Progress: ${total}/5 answered`;
+    }
+  }
+</script>
+
+</body>
+</html>
